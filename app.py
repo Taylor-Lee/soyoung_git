@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 client = pymongo.MongoClient('localhost', 27017)
 db = client.syproject
-db.createCollection(foodcollection, [options])
+# db.createCollection('foodcollection')
 
 
 @app.route('/')
@@ -20,21 +20,23 @@ def post_food():
     date = request.form['date']
     comment = request.form['comment']
 
-    foodcollection = {
+    food_info = {
        'name': name,
        'date': date,
        'comment': comment,
     }
 
+    db.foodcollection.insert_one(food_info)
+
     return jsonify({'result': 'success', 'msg': '추가되었습니다'})
 
 
-# @app.route('/food', methods=['GET'])
-# def read_food():
+@app.route('/food', methods=['GET'])
+def read_food():
 
-#     result = list(db.foodcollection.find({}, {'_id': False}))
+    result = list(db.foodcollection.find({}, {'_id': False}))
 
-#     return jsonify({'result': 'success', 'foodcollection': result})
-#
-# if __name__ == '__main__':
-#     app.run('0.0.0.0', port=5000, debug=True)
+    return jsonify({'result': 'success', 'foodcollection': result})
+
+if __name__ == '__main__':
+    app.run('0.0.0.0', port=5000, debug=True)
